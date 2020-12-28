@@ -5,6 +5,18 @@
 }
 body{
     font-family: 'Righteous', cursive;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #c7cdd3;
+}
+#gameBoard{
+    max-width: 700px;
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 20px;
 }
 .card{
     position: relative;
@@ -22,9 +34,7 @@ body{
     align-items: center;
     border-radius: 20px;
     box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.45);
-
     backface-visibility: hidden;
-
 }
 .flip:hover{
     transform: rotateY(180deg);
@@ -45,7 +55,7 @@ body{
     background-color: rgba(0, 0, 0, 0.9);
     color: white;
     font-size: 50px;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     flex-direction: column;
