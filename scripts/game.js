@@ -19,7 +19,41 @@ startGame();
 function startGame(){
     cards = createCardsFromTechs(techs);
     shuffleCards(cards);
-    console.log(cards)
+    initializeCards(cards);
+
+}
+
+function initializeCards(cards){
+    let gameBoard = document.getElementById("gameBoard");
+    cards.forEach(card=>{
+        let cardElement = document.createElement('div');
+        cardElement.id = card.id;
+        cardElement.classList.add('card');
+        cardElement.dataset.icon = card.icon;
+
+        createCardContent(card, cardElement)
+        cardElement.addEventListener('click', flipCard);
+        gameBoard.appendChild(cardElement);
+   })
+}
+
+function createCardContent(card, cardElement){
+    createCardFace(FRONT, card, cardElement);
+    createCardFace(BACK, card, cardElement);
+}
+
+function createCardFace(face, card, cardElement){
+    let cardElementFace = document.createElement('div');
+    cardElementFace.classList.add(face);
+    if (face === FRONT){
+        let iconElement = document.createElement('img');
+        iconElement.classList.add('icon');
+        iconElement.src = "./assets/images/" + card.icon + ".png";
+        cardElementFace.appendChild(iconElement);
+    }else{
+        cardElementFace.innerHTML = "&lt/&gt";
+    }
+    cardElement.appendChild(cardElementFace);
 }
 
 function shuffleCards(cards){
@@ -39,9 +73,6 @@ function createCardsFromTechs(techs){
     for(let tech of techs){
         cards.push(createPairFromTech(tech));
     }
-
-    // console.log(cards.flatMap(pair=> pair))
-    // retorna todas as cartas.
 
     return cards.flatMap(pair=>pair);
 }
@@ -64,4 +95,8 @@ function createIdWithTech(tech){
 
 function restart(){
 
+}
+
+function flipCard(){
+    this.classList.add("flip")
 }

@@ -36,7 +36,7 @@ body{
     box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.45);
     backface-visibility: hidden;
 }
-.flip:hover{
+.flip{
     transform: rotateY(180deg);
 }
 .card_front{
@@ -55,6 +55,7 @@ body{
     background-color: rgba(0, 0, 0, 0.9);
     color: white;
     font-size: 50px;
+    /* display: flex; */
     display: none;
     justify-content: center;
     align-items: center;
