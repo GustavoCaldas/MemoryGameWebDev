@@ -1,7 +1,52 @@
-const FRONT = "card_front";
-const BACK = "card_back";
+let game = {
 
-let techs = ['bootstrap',
+    lockMode: false,
+    firstCard: null,
+    secondCard: null,
+
+    setCard: function(id){
+        let card = this.cards.filter(card=>card.id===id)[0];
+
+        if (card.flipped || this.lockMode){
+            return false;
+        }
+
+        if (!this.firstCard){
+            this.firstCard = card;
+            this.firstCard.flipped = true;
+            return true;
+        }else{
+            this.secondCard = card;
+            this.secondCard.flipped = true;
+            this.lockMode = true;
+            return true;
+        }
+    },
+
+    checkMatch: function(){
+        if(!this.firstCard || !this.secondCard){
+            return false;
+        }
+        return this.firstCard.icon === this.secondCard.icon;
+    },
+
+    checkGameOver: function(){
+        return this.cards.filter(card=>!card.flipped).length == 0;
+    },
+    
+    clearCards: function(){
+        this.firstCard = null;
+        this.secondCard = null;
+        this.lockMode = false;
+    },
+
+    unflipCards: function(){
+        this.firstCard.flipped = false;
+        this.secondCard.flipped = false;
+        this.clearCards();
+    },
+
+    techs: ['bootstrap',
     'css',
     'electron',
     'firebase',
@@ -10,93 +55,55 @@ let techs = ['bootstrap',
     'jquery',
     'mongo',
     'node',
-    'react'];
+    'react'],
 
-let cards = null;
+    cards: null,
 
-startGame();
+    createCardsFromTechs: function(){
+        this.cards = [];
+    
+        this.techs.forEach((tech)=>{
+            this.cards.push(this.createPairFromTech(tech));
+        })
+    
+        this.cards = this.cards.flatMap(pair=>pair);
+        this.shuffleCards();
+        return this.cards;
+    },
 
-function startGame(){
-    cards = createCardsFromTechs(techs);
-    shuffleCards(cards);
-    initializeCards(cards);
+    createPairFromTech: function(tech){
+        // Create 2 objects Cards.
+        return [{
+            id: this.createIdWithTech(tech),
+            icon: tech,
+            flipped: false,
+        }, {
+            id: this.createIdWithTech(tech),
+            icon: tech,
+            flipped: false,
+        }]
+    },
 
+    createIdWithTech: function(tech){
+        // Create a random Id for the parameter.
+        return tech + parseInt(Math.random() * 1000);
+    },
+
+    shuffleCards: function (){
+        // Shuffle the cards.
+        let currentIndex = this.cards.length;
+        let randomIndex = 0;
+    
+        while(currentIndex !== 0){
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [this.cards[randomIndex], this.cards[currentIndex]] = 
+                [this.cards[currentIndex], this.cards[randomIndex]];
+        }
+    },
 }
 
-function initializeCards(cards){
-    let gameBoard = document.getElementById("gameBoard");
-    cards.forEach(card=>{
-        let cardElement = document.createElement('div');
-        cardElement.id = card.id;
-        cardElement.classList.add('card');
-        cardElement.dataset.icon = card.icon;
 
-        createCardContent(card, cardElement)
-        cardElement.addEventListener('click', flipCard);
-        gameBoard.appendChild(cardElement);
-   })
-}
 
-function createCardContent(card, cardElement){
-    createCardFace(FRONT, card, cardElement);
-    createCardFace(BACK, card, cardElement);
-}
 
-function createCardFace(face, card, cardElement){
-    let cardElementFace = document.createElement('div');
-    cardElementFace.classList.add(face);
-    if (face === FRONT){
-        let iconElement = document.createElement('img');
-        iconElement.classList.add('icon');
-        iconElement.src = "./assets/images/" + card.icon + ".png";
-        cardElementFace.appendChild(iconElement);
-    }else{
-        cardElementFace.innerHTML = "&lt/&gt";
-    }
-    cardElement.appendChild(cardElementFace);
-}
 
-function shuffleCards(cards){
-    let currentIndex = cards.length;
-    let randomIndex = 0;
-
-    while(currentIndex !== 0){
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        [cards[randomIndex], cards[currentIndex]] = [cards[currentIndex], cards[randomIndex]];
-    }
-}
-
-function createCardsFromTechs(techs){
-    cards = [];
-
-    for(let tech of techs){
-        cards.push(createPairFromTech(tech));
-    }
-
-    return cards.flatMap(pair=>pair);
-}
-
-function createPairFromTech(tech){
-    return [{
-        id: createIdWithTech(tech),
-        icon: tech,
-        flipped: false,
-    }, {
-        id: createIdWithTech(tech),
-        icon: tech,
-        flipped: false,
-    }]
-}
-
-function createIdWithTech(tech){
-    return tech + parseInt(Math.random() * 1000);
-}
-
-function restart(){
-
-}
-
-function flipCard(){
-    this.classList.add("flip")
-}
